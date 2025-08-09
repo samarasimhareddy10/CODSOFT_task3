@@ -1,0 +1,42 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.datasets import load_iris
+
+# Load the Iris dataset
+iris = load_iris()
+data = pd.DataFrame(data=iris['data'], columns=iris['feature_names'])
+data['target'] = iris['target']
+data['target_names'] = [iris['target_names'][i] for i in iris['target']]
+
+# Features and target
+features = ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
+target = 'target'
+
+# Split data
+X_train, X_val, y_train, y_val = train_test_split(data[features], data[target], test_size=0.2, random_state=42)
+
+# Model training
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Prediction
+y_pred = model.predict(X_val)
+
+# Evaluation
+accuracy = accuracy_score(y_val, y_pred)
+print(f'Accuracy: {accuracy:.2f}')
+
+print(classification_report(y_val, y_pred, target_names=iris['target_names']))
+
+# Example prediction
+new_data = pd.DataFrame({
+    'sepal length (cm)': [5.1],
+    'sepal width (cm)': [3.5],
+    'petal length (cm)': [1.4],
+    'petal width (cm)': [0.2]
+})
+
+predicted_species = model.predict(new_data)[0]
+print(f'Predicted species: {iris['target_names'][predicted_species]}')
